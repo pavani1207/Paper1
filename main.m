@@ -8,6 +8,7 @@ close all
 img_dir = 'C:\Users\Datasets\';
 
 % get a list of all the files in the directory
+
 file_list = dir([img_dir '*.jpg']);
 for i = 1:length(file_list)
     % get the file name
@@ -18,22 +19,27 @@ for i = 1:length(file_list)
     Y=double(Y);
     YY{i}=Y;
     % imshow(Y);
+    
     % Apply Collatz transform for nth round
     cn = 10;% key
     [II,map1] = modified_collatz(Y,cn);
 
     % We compute the Fresnel transform of the test image
+    
     lambda=632.8e-9; % Wavelength in meters
     d = 0.01; % distance in meters
     T = 10e-6; % sampling distance between pixels
     tau=sqrt(lambda*d); % tau parameter, by definition
+    
     fres=fresnelet_transform(II, tau, T, 1);
+    
     %  hash generation
     Mhash{i}=hash(fres);
 end
 
  %  scrambled watermark generation
-w=imread("watermark2.jpg");
+ 
+w=imread("watermark.jpg");
 % wII=imresize(w,[64,64]);
 wII=imresize(rgb2gray(w),[64,64]);
 WI = double(wII); % I stores the nth iteration output of collatz transform 
@@ -41,6 +47,7 @@ n = 5;  % number of iteration or round (used as key)
 [wkey,wmap]=modified_collatz3d(WI,n);
 
 % scrambling of collatz watermark using choatic 
+
 CHKEY = ceil(rand(1,max(64,64)).*255);
 CSWM=echoatic(wkey,CHKEY);
 
@@ -49,8 +56,6 @@ for i=1:10
 key{i}=bitxor(Mhash{i},CSWM);
 end
 
-toc
-tic
 % attacked image
 
 for k = 1:length(file_list)
